@@ -1,7 +1,7 @@
 SetEnvironment "Prod"
 function SetEnvironment($environment) {
 
-    $configPath = "C:\IIS\API\Dell.DSA.Logging.G1\Web.Config"
+    $configPath = "Web.Config"
     $doc = [System.Xml.XmlDocument](Get-Content $configPath);
     $nodeAlreadyExists = $doc.SelectSingleNode("//environmentVariable[@name='ASPNETCORE_ENVIRONMENT']")
     
