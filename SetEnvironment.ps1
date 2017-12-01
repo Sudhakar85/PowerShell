@@ -1,13 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-  <system.webServer>
-    <handlers>
-      <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModule" resourceType="Unspecified" />
-    </handlers>
-    <aspNetCore processPath="dotnet" arguments=".\Dell.DSA.AposSearch.API.dll" stdoutLogEnabled="false" stdoutLogFile=".\logs\stdout">
-      <environmentVariables>
-        <environmentVariable name="ASPNETCORE_ENVIRONMENT" value="Prod" />
-      </environmentVariables>
-    </aspNetCore>
-  </system.webServer>
-</configuration>
+SetEnvironment "Prod"
+function SetEnvironment($environment) {
+
+    $configPath = "C:\IIS\API\Dell.DSA.Logging.G1\Web.Config"
+    $doc = [System.Xml.XmlDocument](Get-Content $configPath);
+    $nodeAlreadyExists = $doc.SelectSingleNode("//environmentVariable[@name='ASPNETCORE_ENVIRONMENT']")
+    
+    if(!$nodeAlreadyExists)
+    {
+        $aspNetCoreNode = $doc.SelectSingleNode("//aspNetCore")
+    
+        $envieonmentVariables = $doc.CreateElement("environmentVariables")
+        $envieonmentVariable = $doc.CreateElement("environmentVariable")
+        $envieonmentVariable.SetAttribute("name", "ASPNETCORE_ENVIRONMENT")
+        $envieonmentVariable.SetAttribute("value", $environment)
+    
+        $envieonmentVariables.AppendChild($envieonmentVariable)
+        $aspNetCoreNode.AppendChild($envieonmentVariables)   
+    }
+    else {
+        $nodeAlreadyExists.SetAttribute("value", $environment)  
+    }
+    
+    $doc.Save($configPath)
+}
